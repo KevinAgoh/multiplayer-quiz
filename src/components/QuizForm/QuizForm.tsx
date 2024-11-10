@@ -38,9 +38,8 @@ const QuizForm = () => {
     event.preventDefault();
     console.log(formData);
     await fetchQuiz(formData.quantity, formData.category, formData.difficulty);
-    navigate('quiz');
-    // Add your  submission logic here
   };
+
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor='quantity'>
@@ -86,6 +85,7 @@ const QuizForm = () => {
       </label>
 
       <button type='submit'>Submit</button>
+      <button>Start Game</button>
     </form>
   );
 };
