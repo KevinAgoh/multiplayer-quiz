@@ -1,23 +1,27 @@
 import axios from 'axios';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import QuizSummary from '../QuizSummary/QuizSummary';
+
+export type Question = {
+  category: string;
+  correct_answer: string;
+  difficulty: string;
+  incorrect_answers: string[];
+  question: string;
+  type: string;
+};
 
 const QuizForm = () => {
-  const [quiz, setQuiz] = useState();
+  const [quiz, setQuiz] = useState<Question[]>();
   const navigate = useNavigate();
 
-  async function fetchQuiz(
-    amount: string,
-    category: string,
-    difficulty: string
-  ) {
-    const url = `https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`;
+  async function fetchQuiz(category: string, difficulty: string) {
+    const url = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
 
     try {
       const response = await axios.get(url);
-      console.log(response.data); // The weather data is stored in response.data
-      setQuiz(response.data);
-      console.log(quiz);
+      setQuiz(response.data.results);
     } catch (error) {
       console.error(error);
     }
@@ -28,7 +32,6 @@ const QuizForm = () => {
     difficulty: '',
     category: ''
   });
-
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -36,27 +39,11 @@ const QuizForm = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData);
-    await fetchQuiz(formData.quantity, formData.category, formData.difficulty);
+    await fetchQuiz(formData.category, formData.difficulty);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor='quantity'>
-        Choose number of questions:
-        <select name='quantity' id='quantity' required onChange={handleChange}>
-          <option value='1'>1</option>
-          <option value='2'>2</option>
-          <option value='3'>3</option>
-          <option value='4'>4</option>
-          <option value='5'>5</option>
-          <option value='6'>6</option>
-          <option value='7'>7</option>
-          <option value='8'>8</option>
-          <option value='9'>9</option>
-          <option value='10'>10</option>
-        </select>
-      </label>
       <label htmlFor='category'>
         Choose a category:
         <select name='category' id='category' required onChange={handleChange}>
@@ -85,6 +72,8 @@ const QuizForm = () => {
       </label>
 
       <button type='submit'>Submit</button>
+
+      {quiz && <QuizSummary quiz={quiz} />}
       <button>Start Game</button>
     </form>
   );
