@@ -8,19 +8,10 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', socket => {
-  console.log(`connect: ${socket.id}`);
-
-  socket.on('joinGame!', () => {
-    console.log(`hello from ${socket.id}`);
-  });
-
+  console.log('a user connected:', socket.id);
   socket.on('disconnect', () => {
-    console.log(`disconnect: ${socket.id}`);
+    console.log('user disconnected');
   });
 });
 
 io.listen(3001);
-
-setInterval(() => {
-  io.emit('message', new Date().toISOString());
-}, 1000);
