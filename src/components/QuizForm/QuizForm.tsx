@@ -5,11 +5,10 @@ import { generateUniqueId } from '../../helpers/generateUniqueId';
 import { Question } from '../../types/game';
 
 interface QuizFormProps {
-  quiz: Question[] | null;
   setQuiz: (quiz: Question[]) => void;
 }
 
-const QuizForm = ({ setQuiz, quiz }: QuizFormProps) => {
+const QuizForm = ({ setQuiz }: QuizFormProps) => {
   const socket = useContext(SocketContext);
 
   async function fetchQuiz(category: string, difficulty: string) {

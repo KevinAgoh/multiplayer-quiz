@@ -1,4 +1,4 @@
-import { Question } from '../QuizForm/QuizForm';
+import { Question } from '../../types/game';
 
 interface QuizSummaryProps {
   quiz: Question[];

@@ -2,17 +2,16 @@ import { ReactNode, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import './App.css';
 import QuizForm from './components/QuizForm/QuizForm';
+import QuizSummary from './components/QuizSummary/QuizSummary';
 import { SocketContext } from './contexts/SocketContext';
-import { Question } from './types/game';
+import { Player, Question } from './types/game';
 
 const socket = io('localhost:3001');
 
-function App(): ReactNode {
+const App = (): ReactNode => {
   const [gameId, setGameId] = useState<string | null>(null);
-  const [quiz, setQuiz] = useState<Question[] | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [players, setPlayers] = useState<string[]>([]);
-  const [playerName, setPlayerName] = useState('');
+  const [quiz, setQuiz] = useState<Question[]>();
+  const [players, setPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -34,17 +33,21 @@ function App(): ReactNode {
       socket.off('game-created');
     };
   }, [players]);
-
   return (
     <SocketContext.Provider value={socket}>
       {!gameId && (
         <div>
-          <QuizForm quiz={quiz} setQuiz={quiz => setQuiz(quiz)} />
-          {/* <button onClick={handleCreateGame}>Create Game</button> */}
+          <QuizForm setQuiz={quiz => setQuiz(quiz)} />
+        </div>
+      )}
+      {gameId && (
+        <div>
+          {quiz && <QuizSummary quiz={quiz} />}
+          <h2>Players</h2>
         </div>
       )}
     </SocketContext.Provider>
   );
-}
+};
 
 export default App;
