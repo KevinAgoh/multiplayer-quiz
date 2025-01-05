@@ -29,17 +29,15 @@ function handleDisconnect(socket) {
 }
 
 function createGame(socket, gameData) {
-  const generateUniqueId = () => Math.random().toString(36).substring(2, 9);
-
   const game = {
-    id: generateUniqueId(),
+    id: gameData.id,
     players: []
   };
   games[game.id] = game;
-  game.players.push({
-    id: socket.id,
-    name: gameData.name || 'Player'
-  });
+  // game.players.push({
+  //   id: socket.id,
+  //   name: gameData.name || 'Player'
+  // });
   socket.join(game.id);
   socket.emit('game-created', game);
 }

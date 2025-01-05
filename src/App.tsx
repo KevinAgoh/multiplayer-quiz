@@ -1,12 +1,16 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import './App.css';
+import QuizForm from './components/QuizForm/QuizForm';
+import { SocketContext } from './contexts/SocketContext';
+import { Question } from './types/game';
 
 const socket = io('localhost:3001');
 
 function App(): ReactNode {
   const [gameId, setGameId] = useState<string | null>(null);
-
+  const [quiz, setQuiz] = useState<Question[] | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
   const [playerName, setPlayerName] = useState('');
 
@@ -31,24 +35,15 @@ function App(): ReactNode {
     };
   }, [players]);
 
-  const handleCreateGame = () => {
-    socket.emit('create-game', { name: playerName });
-  };
-
   return (
-    <>
+    <SocketContext.Provider value={socket}>
       {!gameId && (
         <div>
-          <input
-            type='text'
-            value={playerName}
-            onChange={e => setPlayerName(e.target.value)}
-            placeholder='Enter your name'
-          />
-          <button onClick={handleCreateGame}>Create Game</button>
+          <QuizForm quiz={quiz} setQuiz={quiz => setQuiz(quiz)} />
+          {/* <button onClick={handleCreateGame}>Create Game</button> */}
         </div>
       )}
-    </>
+    </SocketContext.Provider>
   );
 }
 

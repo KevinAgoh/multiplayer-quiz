@@ -1,20 +1,16 @@
 import axios from 'axios';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import QuizSummary from '../QuizSummary/QuizSummary';
+import { ChangeEvent, FormEvent, useContext, useState } from 'react';
+import { SocketContext } from '../../contexts/SocketContext';
+import { generateUniqueId } from '../../helpers/generateUniqueId';
+import { Question } from '../../types/game';
 
-export type Question = {
-  category: string;
-  correct_answer: string;
-  difficulty: string;
-  incorrect_answers: string[];
-  question: string;
-  type: string;
-};
+interface QuizFormProps {
+  quiz: Question[] | null;
+  setQuiz: (quiz: Question[]) => void;
+}
 
-const QuizForm = () => {
-  const [quiz, setQuiz] = useState<Question[]>();
-  const navigate = useNavigate();
+const QuizForm = ({ setQuiz, quiz }: QuizFormProps) => {
+  const socket = useContext(SocketContext);
 
   async function fetchQuiz(category: string, difficulty: string) {
     const url = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
@@ -40,6 +36,10 @@ const QuizForm = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await fetchQuiz(formData.category, formData.difficulty);
+  };
+
+  const handleCreateGame = () => {
+    socket.emit('create-game', { id: generateUniqueId() });
   };
 
   return (
@@ -71,10 +71,9 @@ const QuizForm = () => {
         </select>
       </label>
 
-      <button type='submit'>Submit</button>
-
-      {quiz && <QuizSummary quiz={quiz} />}
-      <button>Start Game</button>
+      <button type='submit' onClick={handleCreateGame}>
+        Submit
+      </button>
     </form>
   );
 };
