@@ -5,7 +5,7 @@ interface PlayersListProps {
 }
 
 const PlayersList = ({ players }: PlayersListProps) => {
-  return <div>{players.map(player => player.name)}</div>;
+  return <div>{players.map(player => player?.username)}</div>;
 };
 
 export default PlayersList;

@@ -1,10 +1,12 @@
 export interface GameData {
+  id: string;
   players: Player[];
-  winner: null | Player;
+  winner?: null | Player;
 }
 
 export interface Player {
-  name: string;
+  id: string;
+  username: string;
   score?: number;
 }
 

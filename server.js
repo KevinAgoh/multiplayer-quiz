@@ -6,8 +6,7 @@ const io = new Server(httpServer, {
   cors: { origin: '*' }
 });
 
-const games = {};
-const players = {};
+const currentGameData = { id: '', players: [] };
 
 io.on('connection', socket => {
   console.log('a user connected:', socket.id);
@@ -20,25 +19,31 @@ io.on('connection', socket => {
     createGame(socket, gameData);
     console.log('Game :', gameData);
   });
+
+  socket.on('join-game', playerData => {
+    addPlayerToGame(socket, playerData);
+  });
 });
 
 function handleDisconnect(socket) {
-  Object.values(games).forEach(game => {
-    game.players = game.players.filter(p => p.id !== socket.id);
-  });
+  currentGameData.players.filter(player => player.id !== socket.id);
 }
 
 function createGame(socket, gameData) {
-  const game = {
-    id: gameData.id,
-    players: []
-  };
-  games[game.id] = game;
-  // game.players.push({
-  //   id: socket.id,
-  //   name: gameData.name || 'Player'
-  // });
-  socket.join(game.id);
-  socket.emit('game-created', game);
+  currentGameData.id = gameData.id;
+
+  socket.emit('game-created', gameData);
 }
+
+function addPlayerToGame(socket, playerData) {
+  const player = {
+    id: socket.id,
+    username: playerData.username || 'Player',
+    score: 0
+  };
+  currentGameData.players?.push(player);
+  socket.join(currentGameData.id);
+  socket.emit('player-joined', player);
+}
+
 io.listen(3001);

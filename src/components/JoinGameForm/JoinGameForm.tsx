@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { SocketContext } from '../../contexts/SocketContext';
 
 const JoinGameForm = () => {
-  const socket = io.connect('http://localhost:4000');
+  const socket = useContext(SocketContext);
   const [username, setUsername] = useState('');
 
-  const joinGame = () => {
+  const handleJoinGame = () => {
     if (username !== '') {
-      socket.emit('join_room', { username });
+      socket.emit('join-game', { username });
     }
   };
 
@@ -21,7 +22,7 @@ const JoinGameForm = () => {
           required
         />
       </form>
-      <button onClick={joinGame}>Join</button>
+      <button onClick={handleJoinGame}>Join</button>
     </div>
   );
 };
